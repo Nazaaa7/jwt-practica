@@ -15,24 +15,29 @@ const __dirname = path.resolve();
 // Middlewares 
 app.use(cors({
     origin: [
-        'http://localhost:5500',
+        'http://localhost:5500', // o el dominio de tu frontend
         'http://localhost:3000',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
 app.use(session({
     secret: 'mi_secreto',
     resave: false,
     saveUninitialized: true,
     cookie: { 
         secure: false, // true solo si usas HTTPS
-        httpOnly: true, 
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 horas
     }
 }));
+
 
 // Montar las rutas
 app.use('/api', router);

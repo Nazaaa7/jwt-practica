@@ -1,25 +1,19 @@
-export const database = 
-    {
-        user: [
-            {
-                id: 1,
-                username: 'admin',
-                password: 'admin'
-            },
-            {
-                id: 2,
-                username: 'user',
-                password: 'user'
-            },
-            {
-                id: 3,
-                username: 'guest',
-                password: 'guest'
-            },
-            {
-                id: 4,
-                username: 'guest2',
-                password: 'guest2'
-            }
-        ]
-    }
+// Requerimos mysql.
+import { createConnection } from "mysql2/promise";
+
+// Creamos una funcion para realizar la conexion a la bd.
+const connectDB = async () => {
+  try {
+    return await createConnection({
+      host: "localhost",
+      user: "root",
+      password: "",
+      database: "db_system",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Exportamos la funcion para realizar la conexion desde cualquier archivo.
+export { connectDB };

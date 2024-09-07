@@ -1,24 +1,26 @@
-import { database } from '../db/database.js'
+import { connectDB } from '../db/database.js'
 
 // Controlador para manejar el inicio de sesión
-export const login = (req, res) => {
+export const login = async (req, res) => {
     const { username, password } = req.body;
 
-    // Buscar usuario
-    const user = database.user.find(u => u.username === username && u.password === password);
+    try {
+        const connection = await connectDB();
+        const [rows] = await connection.execute('SELECT * FROM users WHERE username = ? AND password = ?', [username, password]);
 
-    if (user) {
-        // Guardar información del usuario en la sesión
-        req.session.userId = user.id;
-        req.session.username = user.username;
-
-        return res.json({ 
-            message: 'Inicio de sesión exitoso', 
-            user: { id: user.id, username: user.username } });
-    } else {
-        return res.status(401).json({ message: 'Credenciales incorrectas' });
+        if (rows.length > 0) {
+            const user = rows[0];
+            req.session.userId = user.id;
+            return res.json({ message: 'Inicio de sesión exitoso' });
+        } else {
+            return res.status(401).json({ message: 'Credenciales incorrectas' });
+        }
+    } catch (error) {
+        console.error('Error al conectarse a la base de datos:', error);
+        return res.status(500).json({ message: 'Error interno del servidor' });
     }
 };
+
 
 // Controlador para obtener los datos de la sesión
 export const getSession = (req, res) => {
