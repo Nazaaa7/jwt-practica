@@ -1,13 +1,14 @@
 import { createConnection } from 'mysql2/promise';
+import { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } from '../config/config.js'; // Importar desde config.js
 
 // Creamos una función para realizar la conexión a la base de datos
 const database = async () => {
   try {
     const connection = await createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'db_system',
+      host: DB_HOST,
+      user: DB_USER,
+      password: DB_PASSWORD,
+      database: DB_NAME,
     });
 
     console.log('Conexión a la base de datos exitosa');

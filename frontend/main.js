@@ -15,18 +15,21 @@
         window.location.href = 'index.html';
     }
 })();
+document.getElementById('logout').addEventListener('click', async function(event) {
+    event.preventDefault();
 
+    try {
+        const response = await fetch('http://localhost:4000/logout', {
+            method: 'POST',
+            credentials: 'include', // Incluye cookies de sesión en la solicitud.
+        });
 
-// Manejar el cierre de sesión
-document.getElementById('logout').addEventListener('click', async () => {
-    const response = await fetch('http://localhost:4000/logout', {
-        method: 'POST',
-        credentials: 'include'
-    })
-    
-    if (!response.ok) {
-        throw new Error('Error al cerrar sesión');
-    } else {
-        window.location.href = 'index.html';
+        if (response.ok) {
+            window.location.href = '/login.html'; // Redirige después del logout
+        } else {
+            console.error('Error al cerrar sesión');
+        }
+    } catch (error) {
+        console.error('Error:', error);
     }
 });

@@ -46,47 +46,55 @@
         integrity='sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy'
         crossorigin='anonymous'></script>
     <script>
-        document.getElementById('login-form').addEventListener('submit', async function (event) {
-            event.preventDefault();
+    document.getElementById('login-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const divError = document.getElementById('message');
 
-            // Validación básica
-            if (!username || !password) {
-                document.getElementById('message').innerText = 'Por favor, completa todos los campos.';
-                return;
-            }
+    // Validación básica
+    if (!username || !password) {
+        divError.innerText = 'Por favor, completa todos los campos.';
+        return;
+    }
 
-            try {
-                const response = await fetch('http://localhost:4000/api/login', {
-                    method: 'POST',
-                    credentials: 'include', // Importante para enviar las cookies de sesión
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password })
-                })
-                
-                if(!response.ok) {
-                    divError.innerText = 'Credenciales inválidas';
-                    divError.classList.add('bg-danger', 'text-white', 'text-center', 'rounded', 'p-2', 'mt-3');
-                    
-                    setTimeout(() => {
-                        divError.hidden = true;
-                    }, 3500);
-                    
-                    return;
-                }
-                
-                const data = await response.json();
-                console.log(data);
-                window.location.href = './views/home.html';
-                
-            } catch (error) {
-
-            }
+    try {
+        const response = await fetch('http://localhost:4000/api/login', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
         });
+
+        if (!response.ok) {
+            divError.innerText = 'Credenciales inválidas';
+            divError.classList.add('bg-danger', 'text-white', 'text-center', 'rounded', 'p-2', 'mt-3');
+            
+            setTimeout(() => {
+                divError.hidden = true;
+            }, 35000);
+            
+            return;
+        }
+
+        const data = await response.json();
+        console.log(data);
+
+        // Verificar si se recibió el token correctamente
+        if (data.message === 'Inicio de sesión exitoso') {
+            window.location.href = './views/home.html';
+        } else {
+            divError.innerText = 'Error desconocido. Inténtalo de nuevo.';
+        }
+
+    } catch (error) { 
+        divError.innerText = 'Error en la solicitud. Inténtalo de nuevo más tarde.';
+    }
+});
+
     </script>
 </body>
 

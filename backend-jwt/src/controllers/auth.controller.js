@@ -1,8 +1,9 @@
+// controllers/auth.controller.js
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { database } from '../db/database.js';
 import generarJwt from '../helpers/generar-jwt.js';
-import { SECRET_KEY } from '../config/env.js';
+import { SECRET_KEY } from '../config/config.js';
 
 export const register = async (req, res) => {
     const { username, password } = req.body;
@@ -13,12 +14,9 @@ export const register = async (req, res) => {
 
     try {
         const connection = await database();
-        
+
         // Verificar si el usuario ya existe
-        const [rows] = await connection.execute(
-            'SELECT * FROM users WHERE username = ?', 
-            [username]
-        );
+        const [rows] = await connection.execute('SELECT * FROM users WHERE username = ?', [username]);
 
         if (rows.length > 0) {
             return res.status(409).json({ message: 'El usuario ya existe' });
@@ -28,17 +26,15 @@ export const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Insertar nuevo usuario
-        const [result] = await connection.execute(
-            'INSERT INTO users (username, password) VALUES (?, ?)', 
-            [username, hashedPassword]
-        );
+        await connection.execute('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
 
         return res.status(201).json({ message: 'Usuario registrado exitosamente' });
     } catch (error) {
-        console.error("Error al registrar el usuario:", error);
+        console.error('Error al registrar el usuario:', error);
         return res.status(500).json({ message: 'Error inesperado', error: error.message });
     }
 };
+
 export const login = async (req, res) => {
     const { username, password } = req.body;
 
@@ -77,7 +73,6 @@ export const login = async (req, res) => {
     }
 };
 
-
 export const getSession = (req, res) => {
     try {
         return res.json({ message: 'Acceso permitido a área protegida', user: req.user });
@@ -86,7 +81,6 @@ export const getSession = (req, res) => {
         return res.status(500).json({ message: 'Error inesperado' });
     }
 };
-
 export const logout = (req, res) => {
     try {
         req.session.destroy(err => {
@@ -94,7 +88,7 @@ export const logout = (req, res) => {
                 return res.status(500).json({ message: 'Error al cerrar sesión' });
             }
 
-            res.clearCookie('authToken');
+            res.clearCookie('authToken'); // Asegúrate de que el nombre de la cookie coincida con la que usas
             return res.json({ message: 'Cierre de sesión exitoso' });
         });
     } catch (error) {
