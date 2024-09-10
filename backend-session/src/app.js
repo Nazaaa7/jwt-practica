@@ -4,7 +4,7 @@ import session from 'express-session';
 import morgan from 'morgan';
 import path from 'path';
 import { router } from '../src/routes/auth.route.js'; // Importar el archivo de rutas
-
+import { getSession } from './controllers/auth.controller.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
@@ -41,5 +41,5 @@ app.use(session({
 
 // Montar las rutas
 app.use('/api', router);
-
+app.get('/session', getSession);
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
